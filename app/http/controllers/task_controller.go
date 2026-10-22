@@ -25,3 +25,15 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 		"id": id,
 	})
 }
+
+func (r *TaskController) Index(ctx http.Context) http.Response {
+	status := ctx.Request().Query("status")
+	page := ctx.Request().QueryInt("page", 1)
+	filters := ctx.Request().QueryMap("filters")
+
+	return ctx.Response().Json(200, map[string]any{
+		"status":  status,
+		"page":    page,
+		"filters": filters,
+	})
+}

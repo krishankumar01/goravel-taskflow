@@ -4,5 +4,8 @@ POST http://localhost:3000/api/v1/tasks
 ### Show task
 GET http://localhost:3000/api/v1/tasks/5
 
+### List tasks
+GET http://localhost:3000/api/v1/tasks?status=done&page=2&filters[priority]=high
+
 ### Hello
 GET http://localhost:3000/hello
