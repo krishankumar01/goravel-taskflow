@@ -19,4 +19,10 @@ func Web() {
 
 	userController := controllers.NewUserController()
 	facades.Route().Get("/users", userController.Index)
+
+	facades.Route().Get("hello", func(ctx http.Context) http.Response {
+		return ctx.Response().Json(200, map[string]any{
+			"message": "Hello, world",
+		})
+	})
 }
