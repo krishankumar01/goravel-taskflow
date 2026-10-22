@@ -12,6 +12,7 @@ func Boot() contractsfoundation.Application {
 	return foundation.Setup().
 		WithMigrations(Migrations).
 		WithRouting(func() {
+			routes.Api()
 			routes.Web()
 		}).
 		WithProviders(Providers).

@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/goravel/framework/contracts/http"
-	"github.com/goravel/framework/contracts/route"
 	"github.com/goravel/framework/support"
 
 	"taskflow/app/http/controllers"
@@ -23,11 +22,5 @@ func Web() {
 
 	facades.Route().Get("hello", func(ctx http.Context) http.Response {
 		return ctx.Response().Json(200, facades.Route().Info("tasks.create"))
-	})
-
-	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
-		router.Post("tasks", func(ctx http.Context) http.Response {
-			return ctx.Response().String(200, "task created")
-		}).Name("tasks.create")
 	})
 }
