@@ -4,6 +4,11 @@ import (
 	"github.com/goravel/framework/contracts/http"
 )
 
+type CreateTaskRequest struct {
+	Title       string `form:"title" json:"title"`
+	Description string `form:"description" json:"description"`
+}
+
 type TaskController struct {
 	// Dependent services
 }
@@ -15,7 +20,14 @@ func NewTaskController() *TaskController {
 }
 
 func (r *TaskController) Store(ctx http.Context) http.Response {
-	return ctx.Response().String(200, "task created")
+	var request CreateTaskRequest
+	if err := ctx.Request().Bind(&request); err != nil {
+		return ctx.Response().Json(400, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	return ctx.Response().Json(200, request)
 }
 
 func (r *TaskController) Show(ctx http.Context) http.Response {
