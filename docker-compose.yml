@@ -1,9 +1,24 @@
-version: '3'
-
 services:
-  goravel:
-    build:
-      context: .
-    ports:
-      - "3000:3000"
+  postgres:
+    image: postgres:15-alpine
     restart: always
+    environment:
+      POSTGRES_DB: taskflow
+      POSTGRES_USER: goravel
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
