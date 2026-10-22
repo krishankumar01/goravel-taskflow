@@ -12,5 +12,6 @@ func Api() {
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("tasks", taskController.Store).Name("tasks.create")
+		router.Get("tasks/{id}", taskController.Show)
 	})
 }

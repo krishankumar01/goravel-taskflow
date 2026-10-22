@@ -1,5 +1,8 @@
 ### Create task
 POST http://localhost:3000/api/v1/tasks
 
+### Show task
+GET http://localhost:3000/api/v1/tasks/5
+
 ### Hello
 GET http://localhost:3000/hello
