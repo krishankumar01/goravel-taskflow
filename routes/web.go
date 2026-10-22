@@ -22,14 +22,12 @@ func Web() {
 	facades.Route().Get("/users", userController.Index)
 
 	facades.Route().Get("hello", func(ctx http.Context) http.Response {
-		return ctx.Response().Json(200, map[string]any{
-			"message": "Hello, world",
-		})
+		return ctx.Response().Json(200, facades.Route().Info("tasks.create"))
 	})
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("tasks", func(ctx http.Context) http.Response {
 			return ctx.Response().String(200, "task created")
-		})
+		}).Name("tasks.create")
 	})
 }
