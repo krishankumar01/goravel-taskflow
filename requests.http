@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### Show task
-GET http://localhost:3000/api/v1/tasks/5
+GET http://localhost:3000/api/v1/tasks/1
 
 ### List tasks
 GET http://localhost:3000/api/v1/tasks?status=done&page=2&filters[priority]=high

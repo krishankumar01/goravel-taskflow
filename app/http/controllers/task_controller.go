@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"taskflow/app/facades"
+	"taskflow/app/models"
+
 	"github.com/goravel/framework/contracts/http"
 )
 
@@ -31,11 +34,18 @@ func (r *TaskController) Store(ctx http.Context) http.Response {
 }
 
 func (r *TaskController) Show(ctx http.Context) http.Response {
-	id := ctx.Request().RouteInt("id")
+	var task models.Task
+	err := facades.Orm().Query().
+		With("Creator").
+		With("Assignee").
+		Find(&task, ctx.Request().RouteInt("id"))
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": err.Error(),
+		})
+	}
 
-	return ctx.Response().Json(200, map[string]any{
-		"id": id,
-	})
+	return ctx.Response().Json(200, task)
 }
 
 func (r *TaskController) Index(ctx http.Context) http.Response {

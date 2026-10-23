@@ -13,8 +13,8 @@ const (
 
 type User struct {
 	orm.Model
-	Name     string `gorm:"size:255;not null"`
-	Email    string `gorm:"size:255;unique;not null"`
-	Password string `gorm:"size:255;not null"`
-	Role     Role   `gorm:"type:enum('manager','member');default:'member';not null"`
+	Name     string `gorm:"size:255;not null" json:"name"`
+	Email    string `gorm:"size:255;unique;not null" json:"email"`
+	Password string `gorm:"size:255;not null" json:"-"`
+	Role     Role   `gorm:"type:enum('manager','member');default:'member';not null" json:"role"`
 }

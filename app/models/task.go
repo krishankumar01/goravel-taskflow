@@ -15,12 +15,12 @@ const (
 
 type Task struct {
 	orm.Model
-	CreatedBy   uint  `gorm:"not null"`
-	Creator     *User `gorm:"foreignKey:CreatedBy"`
-	AssignedTo  *uint
-	Assignee    *User  `gorm:"foreignKey:AssignedTo"`
-	Title       string `gorm:"size:255;not null"`
-	Description string `gorm:"type:text;not null"`
-	Status      Status `gorm:"type:enum('pending','in-progress','done');default:'pending';not null"`
-	DueAt       *carbon.DateTime
+	CreatedBy   uint             `gorm:"not null" json:"created_by"`
+	Creator     *User            `gorm:"foreignKey:CreatedBy" json:"creator"`
+	AssignedTo  *uint            `json:"assigned_to"`
+	Assignee    *User            `gorm:"foreignKey:AssignedTo" json:"assignee"`
+	Title       string           `gorm:"size:255;not null" json:"title"`
+	Description string           `gorm:"type:text;not null" json:"description"`
+	Status      Status           `gorm:"type:enum('pending','in-progress','done');default:'pending';not null" json:"status"`
+	DueAt       *carbon.DateTime `json:"due_at"`
 }
