@@ -3,6 +3,7 @@ module taskflow
 go 1.25.0
 
 require (
+	github.com/brianvoe/gofakeit/v7 v7.15.0
 	github.com/goravel/framework v1.18.0
 	github.com/goravel/gin v1.18.0
 	github.com/goravel/postgres v1.18.0

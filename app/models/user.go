@@ -1,7 +1,10 @@
 package models
 
 import (
+	"github.com/goravel/framework/contracts/database/factory"
 	"github.com/goravel/framework/database/orm"
+
+	"taskflow/database/factories"
 )
 
 type Role string
@@ -20,4 +23,8 @@ type User struct {
 
 	CreatedTasks  []Task `gorm:"foreignKey:CreatedBy" json:"created_tasks"`
 	AssignedTasks []Task `gorm:"foreignKey:AssignedTo" json:"assigned_tasks"`
+}
+
+func (u *User) Factory() factory.Factory {
+	return &factories.UserFactory{}
 }

@@ -1,8 +1,11 @@
 package models
 
 import (
+	"github.com/goravel/framework/contracts/database/factory"
 	"github.com/goravel/framework/database/orm"
 	"github.com/goravel/framework/support/carbon"
+
+	"taskflow/database/factories"
 )
 
 type Status string
@@ -23,4 +26,8 @@ type Task struct {
 	Description string           `gorm:"type:text;not null" json:"description"`
 	Status      Status           `gorm:"type:enum('pending','in-progress','done');default:'pending';not null" json:"status"`
 	DueAt       *carbon.DateTime `json:"due_at"`
+}
+
+func (t *Task) Factory() factory.Factory {
+	return &factories.TaskFactory{}
 }
