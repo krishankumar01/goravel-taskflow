@@ -17,4 +17,7 @@ type User struct {
 	Email    string `gorm:"size:255;unique;not null" json:"email"`
 	Password string `gorm:"size:255;not null" json:"-"`
 	Role     Role   `gorm:"type:enum('manager','member');default:'member';not null" json:"role"`
+
+	CreatedTasks  []Task `gorm:"foreignKey:CreatedBy" json:"created_tasks"`
+	AssignedTasks []Task `gorm:"foreignKey:AssignedTo" json:"assigned_tasks"`
 }
