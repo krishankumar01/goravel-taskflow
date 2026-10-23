@@ -13,6 +13,7 @@ import (
 
 func Boot() contractsfoundation.Application {
 	return foundation.Setup().
+		WithSeeders(Seeders).
 		WithMigrations(Migrations).
 		WithRouting(func() {
 			routes.Api()
