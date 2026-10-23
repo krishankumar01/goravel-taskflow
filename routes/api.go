@@ -16,6 +16,7 @@ func Api() {
 		router.Get("tasks/{id}", taskController.Show)
 		router.Get("tasks", taskController.Index)
 
+		router.Get("users", userController.Index)
 		router.Get("users/{id}", userController.Show)
 	})
 }

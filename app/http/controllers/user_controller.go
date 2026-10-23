@@ -4,6 +4,7 @@ import (
 	"taskflow/app/facades"
 	"taskflow/app/models"
 
+	"github.com/goravel/framework/contracts/database/orm"
 	"github.com/goravel/framework/contracts/http"
 )
 
@@ -14,9 +15,20 @@ func NewUserController() *UserController {
 }
 
 func (r *UserController) Index(ctx http.Context) http.Response {
-	return ctx.Response().Success().Json(http.Json{
-		"Hello": "Goravel",
-	})
+	var users []models.User
+	err := facades.Orm().Query().
+		With("AssignedTasks", func(query orm.Query) orm.Query {
+			return query.Where("status <> ?", models.StatusDone)
+		}).
+		With("AssignedTasks.Creator").
+		Find(&users)
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	return ctx.Response().Json(200, users)
 }
 
 func (r *UserController) Show(ctx http.Context) http.Response {

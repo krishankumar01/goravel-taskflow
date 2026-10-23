@@ -4,7 +4,6 @@ import (
 	"github.com/goravel/framework/contracts/http"
 	"github.com/goravel/framework/support"
 
-	"taskflow/app/http/controllers"
 	"taskflow/app/facades"
 )
 
@@ -16,9 +15,6 @@ func Web() {
 	})
 
 	facades.Route().Static("public", "./public")
-
-	userController := controllers.NewUserController()
-	facades.Route().Get("/users", userController.Index)
 
 	facades.Route().Get("hello", func(ctx http.Context) http.Response {
 		return ctx.Response().Json(200, facades.Route().Info("tasks.create"))
