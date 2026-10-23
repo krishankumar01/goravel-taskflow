@@ -22,7 +22,7 @@ func Boot() contractsfoundation.Application {
 		WithConfig(config.Boot).
 		WithCallback(func() {
 			facades.Schema().Extend(schema.Extension{
-				Models: []any{models.User{}},
+				Models: []any{models.User{}, models.Task{}},
 			})
 		}).
 		Create()
