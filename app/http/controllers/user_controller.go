@@ -24,8 +24,9 @@ func (r *UserController) Index(ctx http.Context) http.Response {
 		With("AssignedTasks.Creator").
 		Find(&users)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not list the users.",
 		})
 	}
 
@@ -39,8 +40,9 @@ func (r *UserController) Show(ctx http.Context) http.Response {
 		With("AssignedTasks").
 		Find(&user, ctx.Request().RouteInt("id"))
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not load the user.",
 		})
 	}
 

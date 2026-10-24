@@ -34,6 +34,7 @@ func (m *Auth) Handle(ctx http.Context) {
 			return
 		}
 
+		facades.Log().Error(err)
 		ctx.Response().Json(500, map[string]any{
 			"error": "Could not load the user.",
 		}).Abort()

@@ -22,8 +22,9 @@ func (r *TaskController) Store(ctx http.Context) http.Response {
 	var request requests.StoreTaskRequest
 	errors, err := ctx.Request().ValidateRequest(&request)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not save the task.",
 		})
 	}
 	if errors != nil {
@@ -42,8 +43,9 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 		"id": "bail|integer|min:1",
 	})
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not load the task.",
 		})
 	}
 	if validator.Fails() {
@@ -58,8 +60,9 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 		With("Assignee").
 		Find(&task, ctx.Request().RouteInt("id"))
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not load the task.",
 		})
 	}
 
@@ -72,8 +75,9 @@ func (r *TaskController) Index(ctx http.Context) http.Response {
 		"page":   "bail|filled|integer|min:1",
 	})
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
-			"error": err.Error(),
+			"error": "Could not list the tasks.",
 		})
 	}
 	if validator.Fails() {

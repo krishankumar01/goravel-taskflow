@@ -39,6 +39,7 @@ func (r *AuthController) Register(ctx http.Context) http.Response {
 	var request requests.RegisterRequest
 	validationErrors, err := ctx.Request().ValidateRequest(&request)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not create the account.",
 		})
@@ -51,6 +52,7 @@ func (r *AuthController) Register(ctx http.Context) http.Response {
 
 	password, err := facades.Hash().Make(request.Password)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not create the account.",
 		})
@@ -62,6 +64,7 @@ func (r *AuthController) Register(ctx http.Context) http.Response {
 		Password: password,
 	}
 	if err := facades.Orm().WithContext(ctx).Query().Create(&user); err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not create the account.",
 		})
@@ -74,6 +77,7 @@ func (r *AuthController) Login(ctx http.Context) http.Response {
 	var request requests.LoginRequest
 	validationErrors, err := ctx.Request().ValidateRequest(&request)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not log in.",
 		})
@@ -86,6 +90,7 @@ func (r *AuthController) Login(ctx http.Context) http.Response {
 
 	var user models.User
 	if err := facades.Orm().WithContext(ctx).Query().Where("email", request.Email).First(&user); err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not log in.",
 		})
@@ -103,6 +108,7 @@ func (r *AuthController) Login(ctx http.Context) http.Response {
 
 	token, err := facades.Auth(ctx).Login(&user)
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not log in.",
 		})
@@ -132,6 +138,7 @@ func (r *AuthController) Refresh(ctx http.Context) http.Response {
 		})
 	}
 	if err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not refresh the token.",
 		})
@@ -144,6 +151,7 @@ func (r *AuthController) Refresh(ctx http.Context) http.Response {
 
 func (r *AuthController) Logout(ctx http.Context) http.Response {
 	if err := facades.Auth(ctx).Logout(); err != nil {
+		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not log out.",
 		})
