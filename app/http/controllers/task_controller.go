@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"taskflow/app/enums"
 	"taskflow/app/facades"
+	"taskflow/app/http/authuser"
 	"taskflow/app/http/requests"
 	"taskflow/app/models"
 
@@ -20,20 +22,44 @@ func NewTaskController() *TaskController {
 
 func (r *TaskController) Store(ctx http.Context) http.Response {
 	var request requests.StoreTaskRequest
-	errors, err := ctx.Request().ValidateRequest(&request)
+	validationErrors, err := ctx.Request().ValidateRequest(&request)
 	if err != nil {
 		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not save the task.",
 		})
 	}
-	if errors != nil {
+	if validationErrors != nil {
 		return ctx.Response().Json(422, map[string]any{
-			"errors": errors.All(),
+			"errors": validationErrors.All(),
 		})
 	}
 
-	return ctx.Response().Json(200, request)
+	task := models.Task{
+		CreatedBy:   authuser.From(ctx).ID,
+		AssignedTo:  request.AssignedTo,
+		Title:       request.Title,
+		Description: request.Description,
+		Status:      enums.StatusPending,
+		DueAt:       request.DueAt,
+	}
+	if err := facades.Orm().WithContext(ctx).Query().Create(&task); err != nil {
+		facades.Log().Error(err)
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not save the task.",
+		})
+	}
+
+	var saved models.Task
+	err = facades.Orm().WithContext(ctx).Query().With("Creator").With("Assignee").Find(&saved, task.ID)
+	if err != nil {
+		facades.Log().Error(err)
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not load the task.",
+		})
+	}
+
+	return ctx.Response().Json(201, saved)
 }
 
 func (r *TaskController) Show(ctx http.Context) http.Response {
