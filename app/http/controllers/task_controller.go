@@ -34,8 +34,24 @@ func (r *TaskController) Store(ctx http.Context) http.Response {
 }
 
 func (r *TaskController) Show(ctx http.Context) http.Response {
+	validator, err := facades.Validation().Make(ctx, map[string]any{
+		"id": ctx.Request().Route("id"),
+	}, map[string]any{
+		"id": "bail|integer|min:1",
+	})
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": err.Error(),
+		})
+	}
+	if validator.Fails() {
+		return ctx.Response().Json(422, map[string]any{
+			"errors": validator.Errors().All(),
+		})
+	}
+
 	var task models.Task
-	err := facades.Orm().Query().
+	err = facades.Orm().Query().
 		With("Creator").
 		With("Assignee").
 		Find(&task, ctx.Request().RouteInt("id"))
@@ -49,6 +65,21 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 }
 
 func (r *TaskController) Index(ctx http.Context) http.Response {
+	validator, err := ctx.Request().Validate(map[string]any{
+		"status": "in:pending,in-progress,done",
+		"page":   "bail|filled|integer|min:1",
+	})
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": err.Error(),
+		})
+	}
+	if validator.Fails() {
+		return ctx.Response().Json(422, map[string]any{
+			"errors": validator.Errors().All(),
+		})
+	}
+
 	status := ctx.Request().Query("status")
 	page := ctx.Request().QueryInt("page", 1)
 	filters := ctx.Request().QueryMap("filters")
