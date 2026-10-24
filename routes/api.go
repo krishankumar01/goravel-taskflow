@@ -6,6 +6,7 @@ import (
 	"taskflow/app/http/middleware"
 
 	"github.com/goravel/framework/contracts/route"
+	httpmiddleware "github.com/goravel/framework/http/middleware"
 )
 
 func Api() {
@@ -15,7 +16,7 @@ func Api() {
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("register", authController.Register)
-		router.Post("login", authController.Login)
+		router.Middleware(httpmiddleware.Throttle("login")).Post("login", authController.Login)
 		router.Post("refresh", authController.Refresh)
 
 		router.Middleware(&middleware.Auth{}).Group(func(router route.Router) {
