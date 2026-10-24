@@ -7,6 +7,16 @@ Content-Type: application/json
   "description": "The first release"
 }
 
+### Create task with bad data
+POST http://localhost:3000/api/v1/tasks
+Content-Type: application/json
+
+{
+  "title": "   ",
+  "assigned_to": 99,
+  "due_at": "2020-01-01"
+}
+
 ### Show task
 GET http://localhost:3000/api/v1/tasks/1
 

@@ -2,15 +2,11 @@ package controllers
 
 import (
 	"taskflow/app/facades"
+	"taskflow/app/http/requests"
 	"taskflow/app/models"
 
 	"github.com/goravel/framework/contracts/http"
 )
-
-type CreateTaskRequest struct {
-	Title       string `form:"title" json:"title"`
-	Description string `form:"description" json:"description"`
-}
 
 type TaskController struct {
 	// Dependent services
@@ -23,10 +19,16 @@ func NewTaskController() *TaskController {
 }
 
 func (r *TaskController) Store(ctx http.Context) http.Response {
-	var request CreateTaskRequest
-	if err := ctx.Request().Bind(&request); err != nil {
-		return ctx.Response().Json(400, map[string]any{
+	var request requests.StoreTaskRequest
+	errors, err := ctx.Request().ValidateRequest(&request)
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
 			"error": err.Error(),
+		})
+	}
+	if errors != nil {
+		return ctx.Response().Json(422, map[string]any{
+			"errors": errors.All(),
 		})
 	}
 
