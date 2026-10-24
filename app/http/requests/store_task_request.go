@@ -21,7 +21,7 @@ func (r *StoreTaskRequest) Rules(ctx http.Context) map[string]any {
 		"title":       "required|string|max:255",
 		"description": "required|string",
 		"assigned_to": "bail|nullable|integer|exists:users,id|regex:^[0-9]+$",
-		"due_at":      "nullable|date",
+		"due_at":      "bail|nullable|date|future_date",
 	}
 }
 
