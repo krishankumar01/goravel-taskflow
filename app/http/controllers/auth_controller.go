@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"sync"
 
 	"taskflow/app/facades"
@@ -8,6 +9,7 @@ import (
 	"taskflow/app/models"
 
 	"github.com/goravel/framework/contracts/http"
+	frameworkerrors "github.com/goravel/framework/errors"
 )
 
 // noUserHash is a bcrypt hash of a password nobody has, made with the same cost as the
@@ -108,4 +110,27 @@ func (r *AuthController) Login(ctx http.Context) http.Response {
 	return ctx.Response().Json(200, map[string]any{
 		"token": token,
 	})
+}
+
+func (r *AuthController) Me(ctx http.Context) http.Response {
+	if _, err := facades.Auth(ctx).Parse(ctx.Request().Header("Authorization")); err != nil {
+		return ctx.Response().Json(401, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	var user models.User
+	if err := facades.Auth(ctx).User(&user); err != nil {
+		if errors.Is(err, frameworkerrors.OrmRecordNotFound) {
+			return ctx.Response().Json(401, map[string]any{
+				"error": "The user no longer exists.",
+			})
+		}
+
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not load the user.",
+		})
+	}
+
+	return ctx.Response().Json(200, user)
 }
