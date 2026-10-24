@@ -9,5 +9,6 @@ import (
 func Rules() []validation.Rule {
 	return []validation.Rule{
 		&rules.FutureDate{},
+		&rules.MaxBytes{},
 	}
 }
