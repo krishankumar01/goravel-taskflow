@@ -1,6 +1,7 @@
 package seeders
 
 import (
+	"taskflow/app/enums"
 	"taskflow/app/facades"
 	"taskflow/app/models"
 )
@@ -16,13 +17,13 @@ func (s *TaskSeeder) Signature() string {
 // Run executes the seeder logic.
 func (s *TaskSeeder) Run() error {
 	var manager models.User
-	err := facades.Orm().Query().Where("role", models.RoleManager).FirstOrFail(&manager)
+	err := facades.Orm().Query().Where("role", enums.RoleManager).FirstOrFail(&manager)
 	if err != nil {
 		return err
 	}
 
 	var members []models.User
-	err = facades.Orm().Query().Where("role", models.RoleMember).Find(&members)
+	err = facades.Orm().Query().Where("role", enums.RoleMember).Find(&members)
 	if err != nil {
 		return err
 	}

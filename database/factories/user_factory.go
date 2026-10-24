@@ -3,6 +3,7 @@ package factories
 import (
 	"github.com/brianvoe/gofakeit/v7"
 
+	"taskflow/app/enums"
 	"taskflow/app/facades"
 )
 
@@ -17,6 +18,6 @@ func (f *UserFactory) Definition() map[string]any {
 		"Name":     gofakeit.Name(),
 		"Email":    gofakeit.Email(),
 		"Password": password,
-		"Role":     "member",
+		"Role":     enums.RoleMember,
 	}
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"taskflow/app/enums"
 	"taskflow/app/facades"
 	"taskflow/app/models"
 
@@ -18,7 +19,7 @@ func (r *UserController) Index(ctx http.Context) http.Response {
 	var users []models.User
 	err := facades.Orm().Query().
 		With("AssignedTasks", func(query orm.Query) orm.Query {
-			return query.Where("status <> ?", models.StatusDone)
+			return query.Where("status <> ?", enums.StatusDone)
 		}).
 		With("AssignedTasks.Creator").
 		Find(&users)

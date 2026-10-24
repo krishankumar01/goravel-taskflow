@@ -3,6 +3,8 @@ package factories
 import (
 	"github.com/brianvoe/gofakeit/v7"
 	"github.com/goravel/framework/support/carbon"
+
+	"taskflow/app/enums"
 )
 
 type TaskFactory struct {
@@ -20,7 +22,8 @@ func (f *TaskFactory) Definition() map[string]any {
 		"Clean up old logs",
 		"Reply to support emails",
 	})
-	status := gofakeit.RandomString([]string{"pending", "in-progress", "done"})
+	statuses := []enums.Status{enums.StatusPending, enums.StatusInProgress, enums.StatusDone}
+	status := statuses[gofakeit.Number(0, len(statuses)-1)]
 	due := carbon.Now().AddDays(gofakeit.Number(1, 30)).StartOfDay().SetHour(9)
 
 	return map[string]any{

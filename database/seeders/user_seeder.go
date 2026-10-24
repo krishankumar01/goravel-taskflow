@@ -1,6 +1,7 @@
 package seeders
 
 import (
+	"taskflow/app/enums"
 	"taskflow/app/facades"
 	"taskflow/app/models"
 )
@@ -19,7 +20,7 @@ func (s *UserSeeder) Run() error {
 	err := facades.Orm().Factory().Create(&manager, map[string]any{
 		"Name":  "Ana",
 		"Email": "ana@example.com",
-		"Role":  models.RoleManager,
+		"Role":  enums.RoleManager,
 	})
 	if err != nil {
 		return err
