@@ -71,8 +71,9 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 
 func (r *TaskController) Index(ctx http.Context) http.Response {
 	validator, err := ctx.Request().Validate(map[string]any{
-		"status": "in:pending,in-progress,done",
-		"page":   "bail|filled|integer|min:1",
+		"status":   "in:pending,in-progress,done",
+		"page":     "bail|filled|integer|min:1",
+		"per_page": "bail|filled|integer|min:1|max:100",
 	})
 	if err != nil {
 		facades.Log().Error(err)
@@ -86,13 +87,30 @@ func (r *TaskController) Index(ctx http.Context) http.Response {
 		})
 	}
 
-	status := ctx.Request().Query("status")
 	page := ctx.Request().QueryInt("page", 1)
-	filters := ctx.Request().QueryMap("filters")
+	perPage := ctx.Request().QueryInt("per_page", 15)
+
+	query := facades.Orm().WithContext(ctx).Query()
+	if status := ctx.Request().Query("status"); status != "" {
+		query = query.Where("status", status)
+	}
+
+	var tasks []models.Task
+	var total int64
+	err = query.With("Creator").With("Assignee").OrderByDesc("id").Paginate(page, perPage, &tasks, &total)
+	if err != nil {
+		facades.Log().Error(err)
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not list the tasks.",
+		})
+	}
 
 	return ctx.Response().Json(200, map[string]any{
-		"status":  status,
-		"page":    page,
-		"filters": filters,
+		"data": tasks,
+		"meta": map[string]any{
+			"page":     page,
+			"per_page": perPage,
+			"total":    total,
+		},
 	})
 }

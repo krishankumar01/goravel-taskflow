@@ -63,7 +63,7 @@ GET http://localhost:3000/api/v1/tasks/1
 Authorization: Bearer {{token}}
 
 ### List tasks
-GET http://localhost:3000/api/v1/tasks?status=done&page=2&filters[priority]=high
+GET http://localhost:3000/api/v1/tasks?status=pending&per_page=5
 Authorization: Bearer {{token}}
 
 ### List users
