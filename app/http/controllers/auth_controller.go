@@ -5,12 +5,12 @@ import (
 	"sync"
 
 	"taskflow/app/facades"
+	"taskflow/app/http/authuser"
 	"taskflow/app/http/requests"
 	"taskflow/app/models"
 
 	"github.com/goravel/framework/auth"
 	"github.com/goravel/framework/contracts/http"
-	frameworkerrors "github.com/goravel/framework/errors"
 )
 
 // noUserHash is a bcrypt hash of a password nobody has, made with the same cost as the
@@ -114,20 +114,7 @@ func (r *AuthController) Login(ctx http.Context) http.Response {
 }
 
 func (r *AuthController) Me(ctx http.Context) http.Response {
-	var user models.User
-	if err := facades.Auth(ctx).User(&user); err != nil {
-		if errors.Is(err, frameworkerrors.OrmRecordNotFound) {
-			return ctx.Response().Json(401, map[string]any{
-				"error": "The user no longer exists.",
-			})
-		}
-
-		return ctx.Response().Json(500, map[string]any{
-			"error": "Could not load the user.",
-		})
-	}
-
-	return ctx.Response().Json(200, user)
+	return ctx.Response().Json(200, authuser.From(ctx))
 }
 
 func (r *AuthController) Refresh(ctx http.Context) http.Response {
