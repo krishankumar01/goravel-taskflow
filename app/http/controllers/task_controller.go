@@ -194,3 +194,27 @@ func (r *TaskController) Update(ctx http.Context) http.Response {
 	return ctx.Response().Json(200, saved)
 }
 
+func (r *TaskController) Destroy(ctx http.Context) http.Response {
+	var task models.Task
+	err := facades.Orm().WithContext(ctx).Query().FindOrFail(&task, ctx.Request().RouteInt("id"))
+	if errors.Is(err, frameworkerrors.OrmRecordNotFound) {
+		return ctx.Response().Json(404, map[string]any{
+			"error": "The task does not exist.",
+		})
+	}
+	if err != nil {
+		facades.Log().Error(err)
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not load the task.",
+		})
+	}
+
+	if _, err := facades.Orm().WithContext(ctx).Query().Delete(&task); err != nil {
+		facades.Log().Error(err)
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not delete the task.",
+		})
+	}
+
+	return ctx.Response().NoContent()
+}

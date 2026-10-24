@@ -27,6 +27,7 @@ func Api() {
 			router.Get("tasks/{id}", taskController.Show)
 			router.Get("tasks", taskController.Index)
 			router.Patch("tasks/{id}", taskController.Update)
+			router.Delete("tasks/{id}", taskController.Destroy)
 
 			router.Get("users", userController.Index)
 			router.Get("users/{id}", userController.Show)

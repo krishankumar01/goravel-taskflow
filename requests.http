@@ -75,6 +75,10 @@ Content-Type: application/json
   "status": "in-progress"
 }
 
+### Delete task
+DELETE http://localhost:3000/api/v1/tasks/1
+Authorization: Bearer {{token}}
+
 ### List users
 GET http://localhost:3000/api/v1/users
 Authorization: Bearer {{token}}
