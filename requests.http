@@ -66,6 +66,15 @@ Authorization: Bearer {{token}}
 GET http://localhost:3000/api/v1/tasks?status=pending&per_page=5
 Authorization: Bearer {{token}}
 
+### Update task
+PATCH http://localhost:3000/api/v1/tasks/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "in-progress"
+}
+
 ### List users
 GET http://localhost:3000/api/v1/users
 Authorization: Bearer {{token}}
