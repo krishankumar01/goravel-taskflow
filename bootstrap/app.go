@@ -1,6 +1,8 @@
 package bootstrap
 
 import (
+	"strings"
+
 	"github.com/goravel/framework/contracts/database/schema"
 	contractsfoundation "github.com/goravel/framework/contracts/foundation"
 	"github.com/goravel/framework/contracts/http"
@@ -30,7 +32,7 @@ func Boot() contractsfoundation.Application {
 			})
 
 			facades.RateLimiter().For("login", func(ctx http.Context) http.Limit {
-				email := ctx.Request().Input("email")
+				email := strings.ToLower(strings.TrimSpace(ctx.Request().Input("email")))
 
 				return limit.PerMinute(5).By(email).Response(func(ctx http.Context) {
 					ctx.Response().Json(429, map[string]any{
