@@ -3,6 +3,7 @@ package routes
 import (
 	"taskflow/app/facades"
 	"taskflow/app/http/controllers"
+	"taskflow/app/http/middleware"
 
 	"github.com/goravel/framework/contracts/route"
 )
@@ -15,15 +16,18 @@ func Api() {
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("register", authController.Register)
 		router.Post("login", authController.Login)
-		router.Get("me", authController.Me)
 		router.Post("refresh", authController.Refresh)
-		router.Post("logout", authController.Logout)
 
-		router.Post("tasks", taskController.Store).Name("tasks.create")
-		router.Get("tasks/{id}", taskController.Show)
-		router.Get("tasks", taskController.Index)
+		router.Middleware(&middleware.Auth{}).Group(func(router route.Router) {
+			router.Get("me", authController.Me)
+			router.Post("logout", authController.Logout)
 
-		router.Get("users", userController.Index)
-		router.Get("users/{id}", userController.Show)
+			router.Post("tasks", taskController.Store).Name("tasks.create")
+			router.Get("tasks/{id}", taskController.Show)
+			router.Get("tasks", taskController.Index)
+
+			router.Get("users", userController.Index)
+			router.Get("users/{id}", userController.Show)
+		})
 	})
 }

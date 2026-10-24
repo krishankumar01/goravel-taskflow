@@ -39,6 +39,7 @@ Authorization: Bearer {{token}}
 
 ### Create task
 POST http://localhost:3000/api/v1/tasks
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -48,6 +49,7 @@ Content-Type: application/json
 
 ### Create task with bad data
 POST http://localhost:3000/api/v1/tasks
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -58,15 +60,19 @@ Content-Type: application/json
 
 ### Show task
 GET http://localhost:3000/api/v1/tasks/1
+Authorization: Bearer {{token}}
 
 ### List tasks
 GET http://localhost:3000/api/v1/tasks?status=done&page=2&filters[priority]=high
+Authorization: Bearer {{token}}
 
 ### List users
 GET http://localhost:3000/api/v1/users
+Authorization: Bearer {{token}}
 
 ### Show user
 GET http://localhost:3000/api/v1/users/2
+Authorization: Bearer {{token}}
 
 ### Hello
 GET http://localhost:3000/hello
