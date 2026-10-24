@@ -25,6 +25,18 @@ Content-Type: application/json
 GET http://localhost:3000/api/v1/me
 Authorization: Bearer {{token}}
 
+### Refresh
+POST http://localhost:3000/api/v1/refresh
+Authorization: Bearer {{token}}
+
+> {%
+  client.global.set("token", response.body.token);
+%}
+
+### Log out
+POST http://localhost:3000/api/v1/logout
+Authorization: Bearer {{token}}
+
 ### Create task
 POST http://localhost:3000/api/v1/tasks
 Content-Type: application/json

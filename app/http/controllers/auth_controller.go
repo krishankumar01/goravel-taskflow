@@ -8,6 +8,7 @@ import (
 	"taskflow/app/http/requests"
 	"taskflow/app/models"
 
+	"github.com/goravel/framework/auth"
 	"github.com/goravel/framework/contracts/http"
 	frameworkerrors "github.com/goravel/framework/errors"
 )
@@ -133,4 +134,45 @@ func (r *AuthController) Me(ctx http.Context) http.Response {
 	}
 
 	return ctx.Response().Json(200, user)
+}
+
+func (r *AuthController) Refresh(ctx http.Context) http.Response {
+	_, err := facades.Auth(ctx).Parse(ctx.Request().Header("Authorization"))
+	if err != nil && !errors.Is(err, auth.ErrorTokenExpired) {
+		return ctx.Response().Json(401, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	token, err := facades.Auth(ctx).Refresh()
+	if errors.Is(err, auth.ErrorRefreshTimeExceeded) {
+		return ctx.Response().Json(401, map[string]any{
+			"error": err.Error(),
+		})
+	}
+	if err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not refresh the token.",
+		})
+	}
+
+	return ctx.Response().Json(200, map[string]any{
+		"token": token,
+	})
+}
+
+func (r *AuthController) Logout(ctx http.Context) http.Response {
+	if _, err := facades.Auth(ctx).Parse(ctx.Request().Header("Authorization")); err != nil {
+		return ctx.Response().Json(401, map[string]any{
+			"error": err.Error(),
+		})
+	}
+
+	if err := facades.Auth(ctx).Logout(); err != nil {
+		return ctx.Response().Json(500, map[string]any{
+			"error": "Could not log out.",
+		})
+	}
+
+	return ctx.Response().NoContent()
 }

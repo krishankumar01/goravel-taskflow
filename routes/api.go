@@ -16,6 +16,8 @@ func Api() {
 		router.Post("register", authController.Register)
 		router.Post("login", authController.Login)
 		router.Get("me", authController.Me)
+		router.Post("refresh", authController.Refresh)
+		router.Post("logout", authController.Logout)
 
 		router.Post("tasks", taskController.Store).Name("tasks.create")
 		router.Get("tasks/{id}", taskController.Show)
