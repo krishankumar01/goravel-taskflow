@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"errors"
+
 	"taskflow/app/enums"
 	"taskflow/app/facades"
 	"taskflow/app/models"
 
 	"github.com/goravel/framework/contracts/database/orm"
 	"github.com/goravel/framework/contracts/http"
+	frameworkerrors "github.com/goravel/framework/errors"
 )
 
 type UserController struct{}
@@ -35,10 +38,15 @@ func (r *UserController) Index(ctx http.Context) http.Response {
 
 func (r *UserController) Show(ctx http.Context) http.Response {
 	var user models.User
-	err := facades.Orm().Query().
+	err := facades.Orm().WithContext(ctx).Query().
 		With("CreatedTasks").
 		With("AssignedTasks").
-		Find(&user, ctx.Request().RouteInt("id"))
+		FindOrFail(&user, ctx.Request().RouteInt("id"))
+	if errors.Is(err, frameworkerrors.OrmRecordNotFound) {
+		return ctx.Response().Json(404, map[string]any{
+			"error": "The user does not exist.",
+		})
+	}
 	if err != nil {
 		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
