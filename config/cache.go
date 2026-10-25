@@ -9,7 +9,7 @@ import (
 func init() {
 	config := facades.Config()
 	config.Add("cache", map[string]any{
-		"default": "redis",
+		"default": config.Env("CACHE_STORE", "redis"),
 
 		// Cache Stores
 		//

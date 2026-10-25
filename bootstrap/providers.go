@@ -12,6 +12,7 @@ import (
 	"github.com/goravel/framework/queue"
 	"github.com/goravel/framework/route"
 	"github.com/goravel/framework/session"
+	"github.com/goravel/framework/testing"
 	"github.com/goravel/framework/validation"
 	"github.com/goravel/framework/view"
 	"github.com/goravel/gin"
@@ -36,5 +37,6 @@ func Providers() []foundation.ServiceProvider {
 		&auth.ServiceProvider{},
 		&queue.ServiceProvider{},
 		&redis.ServiceProvider{},
+		&testing.ServiceProvider{},
 	}
 }
