@@ -47,11 +47,15 @@ func Boot() contractsfoundation.Application {
 				})
 			})
 
-			facades.Gate().Define(policies.ViewUsers, func(ctx context.Context, arguments map[string]any) contractsaccess.Response {
+			facades.Gate().Before(func(ctx context.Context, ability string, arguments map[string]any) contractsaccess.Response {
 				if user := authuser.From(ctx); user != nil && user.Role == enums.RoleManager {
 					return access.NewAllowResponse()
 				}
 
+				return nil
+			})
+
+			facades.Gate().Define(policies.ViewUsers, func(ctx context.Context, arguments map[string]any) contractsaccess.Response {
 				return access.NewDenyResponse("Only managers can see the users.")
 			})
 		}).
