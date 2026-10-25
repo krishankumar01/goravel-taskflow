@@ -114,3 +114,82 @@ func (s *TaskTestSuite) TestRoles() {
 		})
 	}
 }
+
+func (s *TaskTestSuite) TestCreateSetsTheCreator() {
+	body, err := http.NewBody().SetFields(map[string]any{
+		"title":       "Write the tests",
+		"description": "Cover every role rule.",
+		"assigned_to": s.ben.ID,
+	}).Build()
+	s.Require().NoError(err)
+	response, err := s.Http(s.T()).WithToken(s.login("ana@example.com")).WithHeader("Content-Type", body.ContentType()).Post("/api/v1/tasks", body.Reader())
+	s.Require().NoError(err)
+
+	response.AssertCreated()
+
+	var task models.Task
+	s.Require().NoError(response.Bind(&task))
+	s.Equal("Write the tests", task.Title)
+	s.Equal(s.ana.ID, task.CreatedBy)
+	s.Equal(s.ben.ID, *task.AssignedTo)
+	s.Equal(enums.StatusPending, task.Status)
+}
+
+func (s *TaskTestSuite) TestAMissingTaskIsNotFound() {
+	response, err := s.Http(s.T()).WithToken(s.login("ana@example.com")).Get("/api/v1/tasks/999")
+	s.Require().NoError(err)
+	response.AssertNotFound()
+}
+
+func (s *TaskTestSuite) TestBadInputIsRefused() {
+	body, err := http.NewBody().SetFields(map[string]any{"description": "No title.", "due_at": "yesterday"}).Build()
+	s.Require().NoError(err)
+	response, err := s.Http(s.T()).WithToken(s.login("ana@example.com")).WithHeader("Content-Type", body.ContentType()).Post("/api/v1/tasks", body.Reader())
+	s.Require().NoError(err)
+
+	response.AssertUnprocessableEntity()
+
+	var refused struct {
+		Errors map[string]any `json:"errors"`
+	}
+	s.Require().NoError(response.Bind(&refused))
+	s.Contains(refused.Errors, "title")
+	s.Contains(refused.Errors, "due_at")
+}
+
+func (s *TaskTestSuite) TestUpdateChangesOnlyTheSentFields() {
+	path := fmt.Sprintf("/api/v1/tasks/%d", s.benTask.ID)
+	body, err := http.NewBody().SetFields(map[string]any{"status": "done"}).Build()
+	s.Require().NoError(err)
+	response, err := s.Http(s.T()).WithToken(s.login("ana@example.com")).WithHeader("Content-Type", body.ContentType()).Patch(path, body.Reader())
+	s.Require().NoError(err)
+
+	response.AssertOk().AssertFluentJson(func(json contractshttp.AssertableJSON) {
+		json.Where("status", "done").
+			Where("title", s.benTask.Title).
+			Where("description", s.benTask.Description)
+	})
+}
+
+func (s *TaskTestSuite) TestDeleteRemovesTheTask() {
+	path := fmt.Sprintf("/api/v1/tasks/%d", s.catTask.ID)
+	response, err := s.Http(s.T()).WithToken(s.login("ana@example.com")).Delete(path, nil)
+	s.Require().NoError(err)
+	response.AssertNoContent()
+
+	count, err := facades.Orm().Query().Model(&models.Task{}).Where("id", s.catTask.ID).Count()
+	s.Require().NoError(err)
+	s.Equal(int64(0), count)
+}
+
+func (s *TaskTestSuite) TestLogoutEndsTheToken() {
+	token := s.login("cat@example.com")
+
+	response, err := s.Http(s.T()).WithToken(token).Post("/api/v1/logout", nil)
+	s.Require().NoError(err)
+	response.AssertNoContent()
+
+	response, err = s.Http(s.T()).WithToken(token).Get("/api/v1/me")
+	s.Require().NoError(err)
+	response.AssertUnauthorized()
+}
