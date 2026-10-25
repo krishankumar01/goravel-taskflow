@@ -6,6 +6,7 @@ import (
 	"taskflow/app/enums"
 	"taskflow/app/facades"
 	"taskflow/app/models"
+	"taskflow/app/policies"
 
 	"github.com/goravel/framework/contracts/database/orm"
 	"github.com/goravel/framework/contracts/http"
@@ -19,8 +20,14 @@ func NewUserController() *UserController {
 }
 
 func (r *UserController) Index(ctx http.Context) http.Response {
+	if response := facades.Gate().WithContext(ctx).Inspect(policies.ViewUsers, nil); !response.Allowed() {
+		return ctx.Response().Json(403, map[string]any{
+			"error": response.Message(),
+		})
+	}
+
 	var users []models.User
-	err := facades.Orm().Query().
+	err := facades.Orm().WithContext(ctx).Query().
 		With("AssignedTasks", func(query orm.Query) orm.Query {
 			return query.Where("status <> ?", enums.StatusDone)
 		}).
@@ -37,6 +44,12 @@ func (r *UserController) Index(ctx http.Context) http.Response {
 }
 
 func (r *UserController) Show(ctx http.Context) http.Response {
+	if response := facades.Gate().WithContext(ctx).Inspect(policies.ViewUsers, nil); !response.Allowed() {
+		return ctx.Response().Json(403, map[string]any{
+			"error": response.Message(),
+		})
+	}
+
 	var user models.User
 	err := facades.Orm().WithContext(ctx).Query().
 		With("CreatedTasks").
