@@ -58,6 +58,10 @@ func Boot() contractsfoundation.Application {
 			facades.Gate().Define(policies.ViewUsers, func(ctx context.Context, arguments map[string]any) contractsaccess.Response {
 				return access.NewDenyResponse("Only managers can see the users.")
 			})
+
+			taskPolicy := policies.NewTaskPolicy()
+			facades.Gate().Define(policies.CreateTask, taskPolicy.Create)
+			facades.Gate().Define(policies.DeleteTask, taskPolicy.Delete)
 		}).
 		Create()
 }

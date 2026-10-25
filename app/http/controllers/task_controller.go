@@ -8,6 +8,7 @@ import (
 	"taskflow/app/http/authuser"
 	"taskflow/app/http/requests"
 	"taskflow/app/models"
+	"taskflow/app/policies"
 
 	"github.com/goravel/framework/contracts/http"
 	frameworkerrors "github.com/goravel/framework/errors"
@@ -25,6 +26,12 @@ func NewTaskController() *TaskController {
 }
 
 func (r *TaskController) Store(ctx http.Context) http.Response {
+	if response := facades.Gate().WithContext(ctx).Inspect(policies.CreateTask, nil); !response.Allowed() {
+		return ctx.Response().Json(403, map[string]any{
+			"error": response.Message(),
+		})
+	}
+
 	var request requests.StoreTaskRequest
 	validationErrors, err := ctx.Request().ValidateRequest(&request)
 	if err != nil {
@@ -206,6 +213,12 @@ func (r *TaskController) Destroy(ctx http.Context) http.Response {
 		facades.Log().Error(err)
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not load the task.",
+		})
+	}
+
+	if response := facades.Gate().WithContext(ctx).Inspect(policies.DeleteTask, nil); !response.Allowed() {
+		return ctx.Response().Json(403, map[string]any{
+			"error": response.Message(),
 		})
 	}
 

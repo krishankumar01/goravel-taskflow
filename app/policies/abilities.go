@@ -1,5 +1,7 @@
 package policies
 
 const (
-	ViewUsers = "view-users"
+	ViewUsers  = "view-users"
+	CreateTask = "create-task"
+	DeleteTask = "delete-task"
 )
