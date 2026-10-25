@@ -22,6 +22,7 @@ func TestAuthTestSuite(t *testing.T) {
 
 func (s *AuthTestSuite) SetupTest() {
 	s.RefreshDatabase()
+	s.Require().True(facades.Cache().Flush())
 }
 
 func (s *AuthTestSuite) TestRoutesNeedAToken() {
