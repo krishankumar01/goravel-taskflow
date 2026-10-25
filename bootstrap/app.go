@@ -61,6 +61,7 @@ func Boot() contractsfoundation.Application {
 
 			taskPolicy := policies.NewTaskPolicy()
 			facades.Gate().Define(policies.CreateTask, taskPolicy.Create)
+			facades.Gate().Define(policies.UpdateTask, taskPolicy.Update)
 			facades.Gate().Define(policies.DeleteTask, taskPolicy.Delete)
 		}).
 		Create()

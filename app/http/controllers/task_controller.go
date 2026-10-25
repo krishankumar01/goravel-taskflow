@@ -180,7 +180,18 @@ func (r *TaskController) Update(ctx http.Context) http.Response {
 		})
 	}
 
-	if changes := validator.Validated(); len(changes) > 0 {
+	changes := validator.Validated()
+	response := facades.Gate().WithContext(ctx).Inspect(policies.UpdateTask, map[string]any{
+		"task":    &task,
+		"changes": changes,
+	})
+	if !response.Allowed() {
+		return ctx.Response().Json(403, map[string]any{
+			"error": response.Message(),
+		})
+	}
+
+	if len(changes) > 0 {
 		if _, err := facades.Orm().WithContext(ctx).Query().Model(&task).Update(changes); err != nil {
 			facades.Log().Error(err)
 			return ctx.Response().Json(500, map[string]any{
