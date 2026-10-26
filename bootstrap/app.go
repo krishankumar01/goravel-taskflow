@@ -34,7 +34,7 @@ func Boot() contractsfoundation.Application {
 		WithConfig(config.Boot).
 		WithCallback(func() {
 			facades.Schema().Extend(schema.Extension{
-				Models: []any{models.User{}, models.Task{}},
+				Models: []any{models.User{}, models.Task{}, models.Attachment{}},
 			})
 
 			facades.RateLimiter().For("login", func(ctx http.Context) http.Limit {
@@ -63,6 +63,11 @@ func Boot() contractsfoundation.Application {
 			facades.Gate().Define(policies.CreateTask, taskPolicy.Create)
 			facades.Gate().Define(policies.UpdateTask, taskPolicy.Update)
 			facades.Gate().Define(policies.DeleteTask, taskPolicy.Delete)
+
+			attachmentPolicy := policies.NewAttachmentPolicy()
+			facades.Gate().Define(policies.CreateAttachment, attachmentPolicy.Create)
+			facades.Gate().Define(policies.ViewAttachment, attachmentPolicy.View)
+			facades.Gate().Define(policies.DeleteAttachment, attachmentPolicy.Delete)
 		}).
 		Create()
 }

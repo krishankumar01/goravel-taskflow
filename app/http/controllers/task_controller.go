@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 
 	"taskflow/app/enums"
 	"taskflow/app/facades"
@@ -78,6 +79,7 @@ func (r *TaskController) Show(ctx http.Context) http.Response {
 	err := facades.Orm().WithContext(ctx).Query().
 		With("Creator").
 		With("Assignee").
+		With("Attachments").
 		FindOrFail(&task, ctx.Request().RouteInt("id"))
 	if errors.Is(err, frameworkerrors.OrmRecordNotFound) {
 		return ctx.Response().Json(404, map[string]any{
@@ -238,6 +240,10 @@ func (r *TaskController) Destroy(ctx http.Context) http.Response {
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not delete the task.",
 		})
+	}
+
+	if err := facades.Storage().DeleteDirectory(fmt.Sprintf("attachments/%d", task.ID)); err != nil {
+		facades.Log().Error(err)
 	}
 
 	return ctx.Response().NoContent()

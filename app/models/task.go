@@ -19,6 +19,7 @@ type Task struct {
 	Description string           `gorm:"type:text;not null" json:"description"`
 	Status      enums.Status     `gorm:"type:enum('pending','in-progress','done');default:'pending';not null" json:"status"`
 	DueAt       *carbon.DateTime `json:"due_at"`
+	Attachments []Attachment     `json:"attachments,omitempty"`
 }
 
 func (t *Task) Factory() factory.Factory {

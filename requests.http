@@ -92,6 +92,26 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/v1/tasks/1
 Authorization: Bearer {{token}}
 
+### Attach a file
+POST http://localhost:3000/api/v1/tasks/1/attachments
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=taskflow
+
+--taskflow
+Content-Disposition: form-data; name="file"; filename="notes.txt"
+Content-Type: text/plain
+
+< ./notes.txt
+--taskflow--
+
+### Download a file
+GET http://localhost:3000/api/v1/tasks/1/attachments/1
+Authorization: Bearer {{token}}
+
+### Delete a file
+DELETE http://localhost:3000/api/v1/tasks/1/attachments/1
+Authorization: Bearer {{token}}
+
 ### List users
 GET http://localhost:3000/api/v1/users
 Authorization: Bearer {{token}}

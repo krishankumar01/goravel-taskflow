@@ -13,6 +13,7 @@ func Api() {
 	authController := controllers.NewAuthController()
 	taskController := controllers.NewTaskController()
 	userController := controllers.NewUserController()
+	attachmentController := controllers.NewAttachmentController()
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("register", authController.Register)
@@ -28,6 +29,10 @@ func Api() {
 			router.Get("tasks", taskController.Index)
 			router.Patch("tasks/{id}", taskController.Update)
 			router.Delete("tasks/{id}", taskController.Destroy)
+
+			router.Post("tasks/{id}/attachments", attachmentController.Store)
+			router.Get("tasks/{id}/attachments/{attachment}", attachmentController.Show)
+			router.Delete("tasks/{id}/attachments/{attachment}", attachmentController.Destroy)
 
 			router.Get("users", userController.Index)
 			router.Get("users/{id}", userController.Show)
