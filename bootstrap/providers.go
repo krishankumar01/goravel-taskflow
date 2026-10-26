@@ -5,6 +5,7 @@ import (
 	"github.com/goravel/framework/cache"
 	"github.com/goravel/framework/contracts/foundation"
 	"github.com/goravel/framework/database"
+	"github.com/goravel/framework/event"
 	"github.com/goravel/framework/filesystem"
 	"github.com/goravel/framework/hash"
 	"github.com/goravel/framework/http"
@@ -38,5 +39,6 @@ func Providers() []foundation.ServiceProvider {
 		&queue.ServiceProvider{},
 		&redis.ServiceProvider{},
 		&testing.ServiceProvider{},
+		&event.ServiceProvider{},
 	}
 }

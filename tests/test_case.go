@@ -19,6 +19,10 @@ func init() {
 	if facades.Config().GetString("filesystems.default") != "testing" {
 		panic("the tests delete uploaded files, so they only run on the testing disk: go test ./tests/... --env=.env.testing")
 	}
+
+	if facades.Config().GetString("queue.default") != "sync" {
+		panic("the tests check what queued listeners wrote, so they only run on the sync queue: go test ./tests/... --env=.env.testing")
+	}
 }
 
 type TestCase struct {

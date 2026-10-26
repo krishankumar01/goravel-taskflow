@@ -9,7 +9,7 @@ import (
 func init() {
 	config := facades.Config()
 	config.Add("queue", map[string]any{
-		"default": "redis",
+		"default": config.Env("QUEUE_CONNECTION", "redis"),
 
 		// Queue Connections
 		//

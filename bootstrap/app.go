@@ -7,14 +7,17 @@ import (
 	"github.com/goravel/framework/auth/access"
 	contractsaccess "github.com/goravel/framework/contracts/auth/access"
 	"github.com/goravel/framework/contracts/database/schema"
+	contractsevent "github.com/goravel/framework/contracts/event"
 	contractsfoundation "github.com/goravel/framework/contracts/foundation"
 	"github.com/goravel/framework/contracts/http"
 	"github.com/goravel/framework/foundation"
 	"github.com/goravel/framework/http/limit"
 
 	"taskflow/app/enums"
+	"taskflow/app/events"
 	"taskflow/app/facades"
 	"taskflow/app/http/authuser"
+	"taskflow/app/listeners"
 	"taskflow/app/models"
 	"taskflow/app/policies"
 	"taskflow/config"
@@ -30,11 +33,16 @@ func Boot() contractsfoundation.Application {
 			routes.Api()
 			routes.Web()
 		}).
+		WithEvents(func() map[contractsevent.Event][]contractsevent.Listener {
+			return map[contractsevent.Event][]contractsevent.Listener{
+				&events.TaskAssigned{}: {&listeners.NotifyAssignee{}},
+			}
+		}).
 		WithProviders(Providers).
 		WithConfig(config.Boot).
 		WithCallback(func() {
 			facades.Schema().Extend(schema.Extension{
-				Models: []any{models.User{}, models.Task{}, models.Attachment{}},
+				Models: []any{models.User{}, models.Task{}, models.Attachment{}, models.Notification{}},
 			})
 
 			facades.RateLimiter().For("login", func(ctx http.Context) http.Limit {

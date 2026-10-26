@@ -112,6 +112,14 @@ Authorization: Bearer {{token}}
 DELETE http://localhost:3000/api/v1/tasks/1/attachments/1
 Authorization: Bearer {{token}}
 
+### List my notifications
+GET http://localhost:3000/api/v1/notifications
+Authorization: Bearer {{token}}
+
+### Mark a notification as read
+POST http://localhost:3000/api/v1/notifications/1/read
+Authorization: Bearer {{token}}
+
 ### List users
 GET http://localhost:3000/api/v1/users
 Authorization: Bearer {{token}}

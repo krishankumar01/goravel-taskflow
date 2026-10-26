@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"taskflow/app/enums"
+	"taskflow/app/events"
 	"taskflow/app/facades"
 	"taskflow/app/http/authuser"
 	"taskflow/app/http/requests"
@@ -69,6 +70,13 @@ func (r *TaskController) Store(ctx http.Context) http.Response {
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not load the task.",
 		})
+	}
+
+	if saved.AssignedTo != nil {
+		err := facades.Event().Job(events.NewTaskAssigned(saved.ID, *saved.AssignedTo, authuser.From(ctx).ID)).Dispatch()
+		if err != nil {
+			facades.Log().Error(err)
+		}
 	}
 
 	return ctx.Response().Json(201, saved)
@@ -183,6 +191,10 @@ func (r *TaskController) Update(ctx http.Context) http.Response {
 	}
 
 	changes := validator.Validated()
+	var assignedBefore uint
+	if task.AssignedTo != nil {
+		assignedBefore = *task.AssignedTo
+	}
 	response := facades.Gate().WithContext(ctx).Inspect(policies.UpdateTask, map[string]any{
 		"task":    &task,
 		"changes": changes,
@@ -209,6 +221,13 @@ func (r *TaskController) Update(ctx http.Context) http.Response {
 		return ctx.Response().Json(500, map[string]any{
 			"error": "Could not load the task.",
 		})
+	}
+
+	if saved.AssignedTo != nil && *saved.AssignedTo != assignedBefore {
+		err := facades.Event().Job(events.NewTaskAssigned(saved.ID, *saved.AssignedTo, authuser.From(ctx).ID)).Dispatch()
+		if err != nil {
+			facades.Log().Error(err)
+		}
 	}
 
 	return ctx.Response().Json(200, saved)
