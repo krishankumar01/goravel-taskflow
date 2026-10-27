@@ -29,6 +29,7 @@ func init() {
 				"driver":     "custom",
 				"connection": "default",
 				"queue":      "default",
+				"concurrent": 2,
 				"via": func() (queue.Driver, error) {
 					return redisfacades.Queue("redis") // The `redis` value is the key of `connections`
 				},

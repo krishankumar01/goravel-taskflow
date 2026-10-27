@@ -26,6 +26,7 @@ import (
 
 func Boot() contractsfoundation.Application {
 	return foundation.Setup().
+		WithJobs(Jobs).
 		WithRules(Rules).
 		WithSeeders(Seeders).
 		WithMigrations(Migrations).
@@ -42,7 +43,7 @@ func Boot() contractsfoundation.Application {
 		WithConfig(config.Boot).
 		WithCallback(func() {
 			facades.Schema().Extend(schema.Extension{
-				Models: []any{models.User{}, models.Task{}, models.Attachment{}, models.Notification{}},
+				Models: []any{models.User{}, models.Task{}, models.Attachment{}, models.Notification{}, models.Export{}},
 			})
 
 			facades.RateLimiter().For("login", func(ctx http.Context) http.Limit {

@@ -15,6 +15,7 @@ func Api() {
 	userController := controllers.NewUserController()
 	attachmentController := controllers.NewAttachmentController()
 	notificationController := controllers.NewNotificationController()
+	exportController := controllers.NewExportController()
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("register", authController.Register)
@@ -37,6 +38,10 @@ func Api() {
 
 			router.Get("notifications", notificationController.Index)
 			router.Post("notifications/{id}/read", notificationController.Read)
+
+			router.Post("exports", exportController.Store)
+			router.Get("exports/{id}", exportController.Show)
+			router.Get("exports/{id}/download", exportController.Download)
 
 			router.Get("users", userController.Index)
 			router.Get("users/{id}", userController.Show)

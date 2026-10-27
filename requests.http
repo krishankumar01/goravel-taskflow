@@ -120,6 +120,18 @@ Authorization: Bearer {{token}}
 POST http://localhost:3000/api/v1/notifications/1/read
 Authorization: Bearer {{token}}
 
+### Export all tasks
+POST http://localhost:3000/api/v1/exports
+Authorization: Bearer {{token}}
+
+### Show an export
+GET http://localhost:3000/api/v1/exports/1
+Authorization: Bearer {{token}}
+
+### Download an export
+GET http://localhost:3000/api/v1/exports/1/download
+Authorization: Bearer {{token}}
+
 ### List users
 GET http://localhost:3000/api/v1/users
 Authorization: Bearer {{token}}
