@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>Hi {{ Name }},</p>
+<p>Your export of all tasks is ready. Download it with <code>GET /api/v1/exports/{{ Export.ID }}/download</code>.</p>
+{% endblock %}

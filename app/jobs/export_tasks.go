@@ -13,6 +13,7 @@ import (
 
 	"taskflow/app/enums"
 	"taskflow/app/facades"
+	"taskflow/app/mails"
 	"taskflow/app/models"
 )
 
@@ -75,8 +76,16 @@ func (receiver *ExportTasks) Handle(args ...any) error {
 
 	export.Status = enums.ExportDone
 	export.Path = path
+	if err := facades.Orm().Query().Save(&export); err != nil {
+		return err
+	}
 
-	return facades.Orm().Query().Save(&export)
+	var user models.User
+	if err := facades.Orm().Query().FindOrFail(&user, export.UserID); err != nil {
+		return err
+	}
+
+	return facades.Mail().Queue(mails.NewExportReady(export, user))
 }
 
 // ShouldRetry gives a failed export two more tries, five seconds apart.

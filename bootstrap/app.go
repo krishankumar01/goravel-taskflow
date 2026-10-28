@@ -36,7 +36,7 @@ func Boot() contractsfoundation.Application {
 		}).
 		WithEvents(func() map[contractsevent.Event][]contractsevent.Listener {
 			return map[contractsevent.Event][]contractsevent.Listener{
-				&events.TaskAssigned{}: {&listeners.NotifyAssignee{}},
+				&events.TaskAssigned{}: {&listeners.NotifyAssignee{}, &listeners.EmailAssignee{}},
 			}
 		}).
 		WithProviders(Providers).

@@ -10,6 +10,7 @@ import (
 	"github.com/goravel/framework/hash"
 	"github.com/goravel/framework/http"
 	"github.com/goravel/framework/log"
+	"github.com/goravel/framework/mail"
 	"github.com/goravel/framework/queue"
 	"github.com/goravel/framework/route"
 	"github.com/goravel/framework/session"
@@ -40,5 +41,6 @@ func Providers() []foundation.ServiceProvider {
 		&redis.ServiceProvider{},
 		&testing.ServiceProvider{},
 		&event.ServiceProvider{},
+		&mail.ServiceProvider{},
 	}
 }

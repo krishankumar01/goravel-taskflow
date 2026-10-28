@@ -1,0 +1,6 @@
+{% autoescape off %}Hi {{ Name }},
+
+{{ By }} assigned you "{{ Task.Title }}".
+{% if Task.DueAt %}It's due {{ Task.DueAt.ToDateTimeString }}.
+{% endif %}
+{{ Task.Description }}{% endautoescape %}
