@@ -13,6 +13,7 @@ import (
 	"github.com/goravel/framework/mail"
 	"github.com/goravel/framework/queue"
 	"github.com/goravel/framework/route"
+	"github.com/goravel/framework/schedule"
 	"github.com/goravel/framework/session"
 	"github.com/goravel/framework/testing"
 	"github.com/goravel/framework/validation"
@@ -42,5 +43,6 @@ func Providers() []foundation.ServiceProvider {
 		&testing.ServiceProvider{},
 		&event.ServiceProvider{},
 		&mail.ServiceProvider{},
+		&schedule.ServiceProvider{},
 	}
 }

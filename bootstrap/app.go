@@ -10,6 +10,7 @@ import (
 	contractsevent "github.com/goravel/framework/contracts/event"
 	contractsfoundation "github.com/goravel/framework/contracts/foundation"
 	"github.com/goravel/framework/contracts/http"
+	"github.com/goravel/framework/contracts/schedule"
 	"github.com/goravel/framework/foundation"
 	"github.com/goravel/framework/http/limit"
 
@@ -26,6 +27,13 @@ import (
 
 func Boot() contractsfoundation.Application {
 	return foundation.Setup().
+		WithCommands(Commands).
+		WithSchedule(func() []schedule.Event {
+			return []schedule.Event{
+				facades.Schedule().Command("tasks:remind").DailyAt("09:00"),
+				facades.Schedule().Command("exports:prune").Daily(),
+			}
+		}).
 		WithJobs(Jobs).
 		WithRules(Rules).
 		WithSeeders(Seeders).

@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>Hi {{ Name }},</p>
+<p>These tasks are due soon:</p>
+<ul>
+{% for task in Tasks %}<li><strong>{{ task.Title }}</strong>, due {{ task.DueAt.ToDateTimeString }}</li>
+{% endfor %}</ul>
+{% endblock %}
