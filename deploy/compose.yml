@@ -1,0 +1,81 @@
+x-app: &app
+  image: ${TASKFLOW_IMAGE:-taskflow}
+  env_file: .env
+  restart: unless-stopped
+  stop_grace_period: 60s
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  web:
+    <<: *app
+    environment:
+      APP_DISABLED_RUNNERS: goravel:queue goravel:schedule
+    volumes:
+      - storage:/www/storage/app
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  worker:
+    <<: *app
+    environment:
+      APP_DISABLED_RUNNERS: goravel:http goravel:schedule
+    volumes:
+      - storage:/www/storage/app
+
+  scheduler:
+    <<: *app
+    environment:
+      APP_DISABLED_RUNNERS: goravel:http goravel:queue
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:8.10-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy:/data
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  storage:
+  postgres:
+  redis:
+  caddy:

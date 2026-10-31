@@ -16,6 +16,9 @@ func Api() {
 	attachmentController := controllers.NewAttachmentController()
 	notificationController := controllers.NewNotificationController()
 	exportController := controllers.NewExportController()
+	healthController := controllers.NewHealthController()
+
+	facades.Route().Get("healthz", healthController.Show)
 
 	facades.Route().Prefix("api/v1").Group(func(router route.Router) {
 		router.Post("register", authController.Register)

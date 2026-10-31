@@ -29,6 +29,12 @@ func init() {
 		// Application Debug Mode
 		"debug": config.Env("APP_DEBUG", false),
 
+		// Disabled Runners
+		//
+		// The runners this process should not start, as a space-separated list
+		// of signatures, for example "goravel:queue goravel:schedule".
+		"disabled_runners": config.Env("APP_DISABLED_RUNNERS", ""),
+
 		// Application Timezone
 		//
 		// Here you may specify the default timezone for your application.

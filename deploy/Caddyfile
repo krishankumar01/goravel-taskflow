@@ -1,0 +1,4 @@
+{$DOMAIN} {
+	respond /healthz 404
+	reverse_proxy web:3000
+}

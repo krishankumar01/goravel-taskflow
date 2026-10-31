@@ -1,0 +1,77 @@
+name: Test, build and deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: taskflow_test
+          POSTGRES_USER: goravel
+          POSTGRES_PASSWORD: secret
+        ports: ["5433:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+      redis:
+        image: redis:8.10-alpine
+        ports: ["6380:6379"]
+      mailpit:
+        image: axllent/mailpit:v1.27
+        env:
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
+        ports: ["1025:1025", "8025:8025"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go test ./tests/... --env=.env.testing
+
+  image:
+    needs: test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      name: ${{ steps.name.outputs.image }}
+    steps:
+      - id: name
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: |
+            ${{ steps.name.outputs.image }}:${{ github.sha }}
+            ${{ steps.name.outputs.image }}:latest
+
+  deploy:
+    needs: image
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    concurrency: deploy
+    environment: production
+    steps:
+      - name: Deploy over SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          IMAGE: ${{ needs.image.outputs.name }}:${{ github.sha }}
+        run: |
+          install -m 600 /dev/null key
+          echo "$SSH_KEY" > key
+          echo "$KNOWN_HOSTS" > known_hosts
+          ssh -i key -o UserKnownHostsFile=known_hosts -o StrictHostKeyChecking=yes deploy@"$HOST" \
+            "cd /opt/taskflow && ./deploy.sh $IMAGE"

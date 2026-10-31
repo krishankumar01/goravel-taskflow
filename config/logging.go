@@ -29,7 +29,7 @@ func init() {
 				"driver":    "single",
 				"path":      "storage/logs/goravel.log",
 				"level":     config.Env("LOG_LEVEL", "debug"),
-				"print":     false,
+				"print":     config.Env("LOG_PRINT", false),
 				"formatter": "text",
 			},
 			"daily": map[string]any{
@@ -37,7 +37,7 @@ func init() {
 				"path":      "storage/logs/goravel.log",
 				"level":     config.Env("LOG_LEVEL", "debug"),
 				"days":      7,
-				"print":     false,
+				"print":     config.Env("LOG_PRINT", false),
 				"formatter": "text",
 			},
 		},
